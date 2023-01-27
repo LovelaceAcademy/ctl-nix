@@ -10,7 +10,8 @@ nix flake init -t github:LovelaceAcademy/nix-templates#ctl
 
 ## How to upgrade
 
-- `nix flake update`
+- pin CTL
+- `nix flake lock`
 - pin `package-set-repo` flake input to corresponding CTL `packages.dhall` upstream rev
 - `nix build .#package-set --impure`
 - `cp result nix/package-set/default.nix`
