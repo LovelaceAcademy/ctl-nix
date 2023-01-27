@@ -7,3 +7,12 @@ Cardano transaction lib backed by nix
 ```bash
 nix flake init -t github:LovelaceAcademy/nix-templates#ctl
 ```
+
+## How to upgrade
+
+- `nix flake update`
+- pin `package-set-repo` flake input to corresponding CTL `packages.dhall` upstream rev
+- `nix build .#package-set --impure`
+- `cp result nix/package-set/default.nix`
+- update `nix/purs-nix/custom-deps.nix` according CTL `{spago/packages}.dhall`
+- `cd test && nix flake check && nix build`
