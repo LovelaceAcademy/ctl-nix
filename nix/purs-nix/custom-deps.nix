@@ -10,22 +10,22 @@ package-set-repo: ctl: pkgs: npmlock2nix: self: super: with self; {
       repo = "https://github.com/Plutonomicon/cardano-transaction-lib.git";
     };
     info = {
-      version = "2.0.0";
+      version = "4.0.2";
       dependencies = [
         aeson
-        aeson-helpers
+        argonaut-codecs
         aff
         aff-promise
         aff-retry
         affjax
+        argonaut
         arraybuffer-types
         arrays
+        avar
         bifunctors
         bigints
         checked-exceptions
         console
-        const
-        contravariant
         control
         datetime
         debug
@@ -37,6 +37,8 @@ package-set-repo: ctl: pkgs: npmlock2nix: self: super: with self; {
         foldable-traversable
         foreign
         foreign-object
+        functions
+        gen
         heterogeneous
         http-methods
         identity
@@ -51,12 +53,14 @@ package-set-repo: ctl: pkgs: npmlock2nix: self: super: with self; {
         monad-logger
         mote
         newtype
+        noble-secp256k1
         node-buffer
         node-child-process
         node-fs
         node-fs-aff
         node-path
         node-process
+        node-readline
         node-streams
         nonempty
         now
@@ -70,7 +74,7 @@ package-set-repo: ctl: pkgs: npmlock2nix: self: super: with self; {
         prelude
         profunctor
         profunctor-lenses
-        toppokki
+        purescript-toppokki
         quickcheck
         quickcheck-combinators
         quickcheck-laws
@@ -83,7 +87,6 @@ package-set-repo: ctl: pkgs: npmlock2nix: self: super: with self; {
         strings
         stringutils
         tailrec
-        text-encoding
         these
         transformers
         tuples
@@ -103,31 +106,11 @@ package-set-repo: ctl: pkgs: npmlock2nix: self: super: with self; {
       foreign =
         let
           ffi = [
-            "BalanceTx.UtxoMinAda"
-            "Deserialization.FromBytes"
-            "Deserialization.Language"
-            "Deserialization.Transaction"
-            "Deserialization.UnspentOutput"
-            "Deserialization.WitnessSet"
-            "Plutip.PortCheck"
-            "Plutip.Utils"
-            "QueryM.UniqueId"
-            "Serialization.Address"
-            "Serialization.AuxiliaryData"
-            "Serialization.BigInt"
-            "Serialization.Hash"
-            "Serialization.MinFee"
-            "Serialization.NativeScript"
-            "Serialization.PlutusData"
-            "Serialization.PlutusScript"
-            "Serialization.WitnessSet"
-            "Types.BigNum"
-            "Types.Int"
-            "Types.TokenName"
-            "Base64"
-            "Hashing"
-            "JsWebSocket"
-            "Serialization"
+            "Ctl.Internal.ApplyArgs"
+            "Ctl.Internal.Base64"
+            "Ctl.Internal.Hashing"
+            "Ctl.Internal.JsWebSocket"
+            "Ctl.Internal.Serialization"
           ];
           node_modules = npmlock2nix.v1.node_modules { src = ctl; } + /node_modules;
         in
@@ -140,70 +123,118 @@ package-set-repo: ctl: pkgs: npmlock2nix: self: super: with self; {
   # pinned to match ctl arg
   aeson = {
     src.git = {
-      repo = "https://github.com/LovelaceAcademy/purescript-aeson.git";
-      rev = "ff1afd366aaab257063320a4acdbd594072f9037";
-    };
-    info = /package.nix;
-  };
-  aeson-helpers = {
-    src.git = {
-      repo = "https://github.com/mlabs-haskell/purescript-bridge-aeson-helpers.git";
-      rev = "44d0dae060cf78babd4534320192b58c16a6f45b";
+      repo = "https://github.com/mlabs-haskell/purescript-aeson.git";
+      rev = "9fd6e8241881d4b8ed9dcb6a80b166d3683f87b5";
     };
     info = {
       dependencies = [
-        aeson
         aff
+        argonaut
         argonaut-codecs
         argonaut-core
         arrays
         bifunctors
-        contravariant
+        bigints
+        bignumber
+        const
         control
         effect
         either
-        enums
+        exceptions
         foldable-traversable
         foreign-object
+        integers
+        lists
         maybe
-        newtype
+        mote
+        numbers
         ordered-collections
+        partial
         prelude
-        profunctor
-        psci-support
         quickcheck
         record
+        sequences
         spec
-        spec-quickcheck
-        transformers
+        strings
         tuples
+        typelevel
         typelevel-prelude
+        uint
+        untagged-union
+      ];
+    };
+  };
+
+  bignumber = {
+    src.git = {
+      repo = "https://github.com/mlabs-haskell/purescript-bignumber.git";
+      rev = "58c51448be23c05caf51cde45bb3b09cc7169447";
+    };
+    info = {
+      dependencies = [
+        console
+        effect
+        either
+        exceptions
+        functions
+        integers
+        partial
+        prelude
+        tuples
+        # FIXME remove missing Data.UInt workaround
+        uint
+        # /endworkaround
       ];
     };
   };
 
   sequences = {
     src.git = {
-      repo = "https://github.com/LovelaceAcademy/purescript-sequences";
-      rev = "b9bc34b92c450bc7d38349062abe0b16b90d592d";
+      repo = "https://github.com/hdgarrood/purescript-sequences";
+      rev = "1f1d828ef30070569c812d0af23eb7253bb1e990";
     };
-    info = /package.nix;
+    info = {
+      dependencies =
+        [
+          arrays
+          self."assert"
+          console
+          effect
+          lazy
+          maybe
+          newtype
+          nonempty
+          partial
+          prelude
+          profunctor
+          psci-support
+          quickcheck
+          quickcheck-laws
+          tuples
+          unfoldable
+          unsafe-coerce
+        ];
+    };
   };
 
   properties = {
     src.git = {
-      repo = "https://github.com/LovelaceAcademy/purescript-properties.git";
-      rev = "4d8de7ffe18bd3997d05a19f3fbeef90aba9c81f";
+      repo = "https://github.com/Risto-Stevcev/purescript-properties.git";
+      rev = "ddcad0f6043cc665037538467a2e2e4173ef276a";
     };
-    info = /package.nix;
+    info = {
+      dependencies = [ prelude console ];
+    };
   };
 
   lattice = {
     src.git = {
-      repo = "https://github.com/LovelaceAcademy/purescript-lattice.git";
-      rev = "086c2f05fdbcc60c2e7b2927147b8518cdbe0e69";
+      repo = "https://github.com/Risto-Stevcev/purescript-lattice.git";
+      rev = "aebe3686eba30f199d17964bfa892f0176c1742d";
     };
-    info = /package.nix;
+    info = {
+      dependencies = [ prelude console properties ];
+    };
   };
 
   mote = {
@@ -222,13 +253,56 @@ package-set-repo: ctl: pkgs: npmlock2nix: self: super: with self; {
 
   medea = {
     src.git = {
-      repo = "https://github.com/LovelaceAcademy/medea-ps.git";
-      rev = "18dc4b42ddd0b2caf5f8c24c258b16f8bb15d3ce";
+      repo = "https://github.com/juspay/medea-ps.git";
+      rev = "8b215851959aa8bbf33e6708df6bd683c89d1a5a";
     };
-    info = /package.nix;
+    info = {
+      dependencies =
+        [
+          aff
+          argonaut
+          arrays
+          bifunctors
+          control
+          effect
+          either
+          enums
+          exceptions
+          foldable-traversable
+          foreign-object
+          free
+          integers
+          lists
+          maybe
+          mote
+          naturals
+          newtype
+          node-buffer
+          node-fs-aff
+          node-path
+          nonempty
+          ordered-collections
+          parsing
+          partial
+          prelude
+          psci-support
+          quickcheck
+          quickcheck-combinators
+          safely
+          spec
+          strings
+          these
+          transformers
+          typelevel
+          tuples
+          unicode
+          unordered-collections
+          unsafe-coerce
+        ];
+    };
   };
 
-  toppokki = {
+  purescript-toppokki = {
     src.git = {
       repo = "https://github.com/firefrorefiddle/purescript-toppokki";
       ref = "mike/browserpages";
@@ -247,7 +321,25 @@ package-set-repo: ctl: pkgs: npmlock2nix: self: super: with self; {
     };
   };
 
-  bigints.src.flake.url = "github:LovelaceAcademy/purescript-bigints/eb0349d2f8153b3d103e902064cc55316c0b8967";
-
-  affjax.src.flake.url = "github:LovelaceAcademy/purescript-affjax/1dd6aa0a0e47b83197a46eed4c35fe9cd6b3e59d";
+  noble-secp256k1 = {
+    src.git = {
+      repo = "https://github.com/mlabs-haskell/purescript-noble-secp256k1.git";
+      rev = "710c15c48c5afae5e0623664d982a587ff2bd177";
+    };
+    info = {
+      dependencies =
+        [
+          aff
+          aff-promise
+          effect
+          prelude
+          spec
+          tuples
+          unsafe-coerce
+          # FIXME remove missing Data.ArrayBuffer.Types workaround
+          arraybuffer-types
+          # /endworkaround
+        ];
+    };
+  };
 }
