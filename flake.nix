@@ -3,7 +3,8 @@
 
   inputs =
     {
-      utils.url = "github:ursi/flake-utils";
+      flake-parts.url = "github:hercules-ci/flake-parts";
+
       # TODO remove pinned to match v5.0.0
       ctl.url = "github:Plutonomicon/cardano-transaction-lib/205f25b591656b825186d2187fdcba1e00c3df87";
       # TODO move to upstream purs-nix
@@ -25,7 +26,7 @@
       toppokki.flake = false;
     };
 
-  outputs = { self, nixpkgs, utils, package-set-repo, npmlock2nix, ... }@inputs:
+  outputs = { self, nixpkgs, flake-parts, package-set-repo, npmlock2nix, ... }@inputs:
     let
       # this export a lib with the override
       __functor = _: { system }:
@@ -39,17 +40,14 @@
           pkgs
           npmlock2nix';
     in
-    { inherit __functor; } // utils.apply-systems
+    { inherit __functor; }
+    // flake-parts.lib.mkFlake { inherit inputs; }
       {
-        inherit inputs;
         # TODO remove systems limited by the test
         systems = [ "x86_64-linux" ];
-      }
-      ({ system, ... }@ctx:
-        let
-          package-set = import ./nix/package-set/generate.nix package-set-repo ctx.pkgs;
-        in
-        {
-          packages.package-set = package-set;
-        });
+        perSystem = { pkgs, inputs, ... }:
+          {
+            packages.package-set = import ./nix/package-set/generate.nix inputs.package-set-repo pkgs;
+          };
+      };
 }
