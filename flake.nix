@@ -45,7 +45,7 @@
       {
         # TODO remove systems limited by the test
         systems = [ "x86_64-linux" ];
-        perSystem = { pkgs, inputs, ... }:
+        perSystem = { pkgs, ... }:
           {
             packages.package-set = import ./nix/package-set/generate.nix inputs.package-set-repo pkgs;
           };
