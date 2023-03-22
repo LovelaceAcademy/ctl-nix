@@ -4,6 +4,7 @@
   inputs =
     {
       flake-parts.url = "github:hercules-ci/flake-parts";
+      haskell-flake.url = "github:srid/haskell-flake";
 
       # TODO remove pinned to match v5.0.0
       ctl.url = "github:Plutonomicon/cardano-transaction-lib/205f25b591656b825186d2187fdcba1e00c3df87";
@@ -40,14 +41,23 @@
           pkgs
           npmlock2nix';
     in
-    { inherit __functor; }
-    // flake-parts.lib.mkFlake { inherit inputs; }
+    { inherit __functor; } // flake-parts.lib.mkFlake
+      { inherit inputs; }
       {
+        imports = with inputs; [
+          haskell-flake.flakeModule
+        ];
         # TODO remove systems limited by the test
         systems = [ "x86_64-linux" ];
         perSystem = { pkgs, ... }:
           {
             packages.package-set = import ./nix/package-set/generate.nix inputs.package-set-repo pkgs;
+            haskellProjects = {
+              plutip = rec {
+                projectRoot = inputs.ctl.inputs.plutip.sourceInfo.outPath;
+                packages.plutip.root = projectRoot;
+              };
+            };
           };
       };
 }
