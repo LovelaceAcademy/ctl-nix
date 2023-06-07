@@ -1504,6 +1504,23 @@
         "type": "github"
       }
     },
+    "ctl-package-set-repo": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1645724869,
+        "narHash": "sha256-pvVi8MbYYJi6jOzows2sb7+SsijKBE7H9RAzDtj7xAE=",
+        "owner": "purescript",
+        "repo": "package-sets",
+        "rev": "2f7bde38fae5f6726f354b31b6d927347ef54c4a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "purescript",
+        "repo": "package-sets",
+        "rev": "2f7bde38fae5f6726f354b31b6d927347ef54c4a",
+        "type": "github"
+      }
+    },
     "customConfig": {
       "locked": {
         "lastModified": 1630400035,
@@ -7166,23 +7183,6 @@
         "type": "github"
       }
     },
-    "package-set-repo": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1645724869,
-        "narHash": "sha256-pvVi8MbYYJi6jOzows2sb7+SsijKBE7H9RAzDtj7xAE=",
-        "owner": "purescript",
-        "repo": "package-sets",
-        "rev": "2f7bde38fae5f6726f354b31b6d927347ef54c4a",
-        "type": "github"
-      },
-      "original": {
-        "owner": "purescript",
-        "repo": "package-sets",
-        "rev": "2f7bde38fae5f6726f354b31b6d927347ef54c4a",
-        "type": "github"
-      }
-    },
     "parsec": {
       "locked": {
         "lastModified": 1635533376,
@@ -7388,12 +7388,12 @@
     "root": {
       "inputs": {
         "ctl": "ctl",
+        "ctl-package-set-repo": "ctl-package-set-repo",
         "nixpkgs": [
           "purs-nix",
           "nixpkgs"
         ],
         "npmlock2nix": "npmlock2nix",
-        "package-set-repo": "package-set-repo",
         "purs-nix": "purs-nix",
         "toppokki": "toppokki",
         "utils": "utils_16"

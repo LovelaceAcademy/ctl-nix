@@ -1,5 +1,5 @@
 {
-  description = "Cardano transaction lib backed by nix";
+  description = "Additional purs-nix packages through different package sets";
 
   inputs =
     {
@@ -13,8 +13,8 @@
       # TODO find a way to get package-set-repo from ctl
       #  package-set-repo now is pinned to follow ctl /packages.dhall
       #  we need a way to extract this information from there
-      package-set-repo.url = "github:purescript/package-sets/2f7bde38fae5f6726f354b31b6d927347ef54c4a";
-      package-set-repo.flake = false;
+      ctl-package-set-repo.url = "github:purescript/package-sets/2f7bde38fae5f6726f354b31b6d927347ef54c4a";
+      ctl-package-set-repo.flake = false;
 
       npmlock2nix.url = "github:nix-community/npmlock2nix";
       npmlock2nix.flake = false;
@@ -25,7 +25,7 @@
       toppokki.flake = false;
     };
 
-  outputs = { self, nixpkgs, utils, package-set-repo, npmlock2nix, ... }@inputs:
+  outputs = { self, nixpkgs, utils, ctl-package-set-repo, npmlock2nix, ... }@inputs:
     let
       # this export a lib with the override
       __functor = _: { system }:
@@ -33,11 +33,13 @@
           pkgs = nixpkgs.legacyPackages.${system};
           npmlock2nix' = import npmlock2nix { inherit pkgs; };
         in
-        import ./nix/purs-nix
-          package-set-repo
-          inputs
-          pkgs
-          npmlock2nix';
+        {
+          ctl = import ./ctl/purs-nix
+            ctl-package-set-repo
+            inputs
+            pkgs
+            npmlock2nix';
+        };
     in
     { inherit __functor; } // utils.apply-systems
       {
@@ -47,9 +49,9 @@
       }
       ({ system, ... }@ctx:
         let
-          package-set = import ./nix/package-set/generate.nix package-set-repo ctx.pkgs;
+          ctl-package-set = import ./ctl/package-set/generate.nix ctl-package-set-repo ctx.pkgs;
         in
         {
-          packages.package-set = package-set;
+          packages.ctl-package-set = ctl-package-set;
         });
 }
