@@ -4,6 +4,10 @@
   inputs =
     {
       utils.url = "github:ursi/flake-utils";
+      npmlock2nix.url = "github:nix-community/npmlock2nix";
+      npmlock2nix.flake = false;
+
+      # TODO move CTL to own its flake in subdir
       # TODO remove pinned to match v5.0.0
       ctl.url = "github:Plutonomicon/cardano-transaction-lib/205f25b591656b825186d2187fdcba1e00c3df87";
       # TODO move to upstream purs-nix
@@ -15,10 +19,6 @@
       #  we need a way to extract this information from there
       ctl-package-set-repo.url = "github:purescript/package-sets/2f7bde38fae5f6726f354b31b6d927347ef54c4a";
       ctl-package-set-repo.flake = false;
-
-      npmlock2nix.url = "github:nix-community/npmlock2nix";
-      npmlock2nix.flake = false;
-
       # TODO find a way to get peer dependencies from ctl
       #  these inputs now is pinned to follow ctl /packages.dhall
       toppokki.url = "github:firefrorefiddle/purescript-toppokki/6983e07bf0aa55ab779bcef12df3df339a2b5bd9";
@@ -34,7 +34,7 @@
           npmlock2nix' = import npmlock2nix { inherit pkgs; };
         in
         {
-          ctl = import ./ctl/purs-nix
+          ctl-overlay = import ./ctl/purs-nix
             ctl-package-set-repo
             inputs
             pkgs
@@ -52,6 +52,8 @@
           ctl-package-set = import ./ctl/package-set/generate.nix ctl-package-set-repo ctx.pkgs;
         in
         {
-          packages.ctl-package-set = ctl-package-set;
+          packages = {
+            inherit ctl-package-set;
+          };
         });
 }
