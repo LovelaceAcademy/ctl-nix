@@ -1,5 +1,16 @@
 # Changelog
 
+## [4.0.0](https://github.com/LovelaceAcademy/ctl-nix/compare/v3.0.0...v4.0.0) (2023-12-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* see CTL develop (v7.0.0) for breaking changes
+
+### deps
+
+* upgrade to CTL develop (v7.0.0) ([6aa9478](https://github.com/LovelaceAcademy/ctl-nix/commit/6aa9478481e6bb0c0524528a94f19dbbf9b321e8))
+
 ## [3.0.0](https://github.com/LovelaceAcademy/ctl-nix/compare/v2.1.2...v3.0.0) (2023-03-14)
 
 
