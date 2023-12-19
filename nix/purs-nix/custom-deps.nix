@@ -1,35 +1,75 @@
 # this is a purs-nix overlay (not nixpkgs overlay)
-package-set-repo: inputs: pkgs: npmlock2nix: self: super: with self;
+system: inputs: pkgs: npmlock2nix: self: super: with self;
 let
+  inherit (pkgs.lib.attrsets) recursiveUpdate;
   # FIXME we should rely on node_modules from ctl-scaffhold
-  node_modules = npmlock2nix.v1.node_modules { src = inputs.ctl; };
+  node_modules_ = npmlock2nix.v1.node_modules { src = inputs.ctl; };
+  node_modules = node_modules_ + /node_modules;
+  ffi = { inherit node_modules; };
+  purs-nix = inputs.purs-nix { inherit system; };
+  inherit (purs-nix) build;
 in
 {
-  cardano-transaction-lib = {
+  cardano-transaction-lib = build {
+    name = "cardano-transaction-lib";
     # TODO find a way to reuse ctl to build cardano-transaction-lib overlay
     #  it seems that we'll need a purs-nix api change for that
     #  also applies to other inputs
-    #src = ctl;
-    src.git = {
-      inherit (inputs.ctl) rev;
-      repo = "https://github.com/Plutonomicon/cardano-transaction-lib.git";
-    };
+    src.path = inputs.ctl;
     info = {
-      foreign = node_modules;
-      version = "5.0.0";
+      version = "7.0.0";
+      foreign = {
+        # TODO get all .js files and use their paths to generate foreigns
+        #  command used `grep -rl --include "*.js" import src/ | xargs -I _ sh -c "S=_; grep module \${S/js/purs} | cut -d ' ' -f2"`
+        #  command used for nested dependencies `spago install && grep -rl --include "*.js" import .spago/ | xargs -I _ sh -c "S=_; grep -H module \${S/js/purs}"`
+        "Ctl.Internal.BalanceTx.UtxoMinAda" = ffi;
+        "Ctl.Internal.Deserialization.FromBytes" = ffi;
+        "Ctl.Internal.Deserialization.Keys" = ffi;
+        "Ctl.Internal.Deserialization.Language" = ffi;
+        "Ctl.Internal.Deserialization.NativeScript" = ffi;
+        "Ctl.Internal.Deserialization.PlutusData" = ffi;
+        "Ctl.Internal.Deserialization.Transaction" = ffi;
+        "Ctl.Internal.Deserialization.UnspentOutput" = ffi;
+        "Ctl.Internal.Plutip.PortCheck" = ffi;
+        "Ctl.Internal.Plutip.Spawn" = ffi;
+        "Ctl.Internal.Plutip.Utils" = ffi;
+        "Ctl.Internal.QueryM.UniqueId" = ffi;
+        "Ctl.Internal.Serialization.Address" = ffi;
+        "Ctl.Internal.Serialization.AuxiliaryData" = ffi;
+        "Ctl.Internal.Serialization.BigInt" = ffi;
+        "Ctl.Internal.Serialization.Hash" = ffi;
+        "Ctl.Internal.Serialization.MinFee" = ffi;
+        "Ctl.Internal.Serialization.NativeScript" = ffi;
+        "Ctl.Internal.Serialization.PlutusData" = ffi;
+        "Ctl.Internal.Serialization.PlutusScript" = ffi;
+        "Ctl.Internal.Serialization.WitnessSet" = ffi;
+        "Ctl.Internal.Types.BigNum" = ffi;
+        "Ctl.Internal.Types.ByteArray" = ffi;
+        "Ctl.Internal.Types.Int" = ffi;
+        "Ctl.Internal.Types.TokenName" = ffi;
+        "Ctl.Internal.Wallet.Cip30.SignData" = ffi;
+        "Ctl.Internal.Wallet.Bip32" = ffi;
+        "Ctl.Internal.Affjax" = ffi;
+        "Ctl.Internal.ApplyArgs" = ffi;
+        "Ctl.Internal.Hashing" = ffi;
+        "Ctl.Internal.JsWebSocket" = ffi;
+        "Ctl.Internal.Serialization" = ffi;
+      };
+
       dependencies = [
         aeson
         aff
         aff-promise
         aff-retry
         affjax
+        ansi
         argonaut
         argonaut-codecs
         arraybuffer-types
         arrays
         avar
         bifunctors
-        bigints
+        js-bigints
         bignumber
         checked-exceptions
         console
@@ -55,9 +95,7 @@ in
         js-date
         lattice
         lists
-        math
         maybe
-        medea
         media-types
         monad-logger
         mote
@@ -103,7 +141,6 @@ in
         typelevel
         typelevel-prelude
         uint
-        undefined
         unfoldable
         untagged-union
         variant
@@ -116,13 +153,15 @@ in
   # additional packages for CTL
   # TODO: automate the set generation using CTL input
   # pinned to match ctl arg
-  aeson = {
+  aeson = build {
+    name = "aeson";
     src.git = {
       repo = "https://github.com/mlabs-haskell/purescript-aeson.git";
-      rev = "bfd8f4dcd0522a076320f9dc710c24817438e02e";
+      # v2.0.0 rev
+      rev = "4fddd518a143de563299d484272a0ef18daa7dcd";
     };
     info = {
-      foreign = node_modules;
+      foreign.Aeson = ffi;
       dependencies = [
         aff
         argonaut
@@ -130,8 +169,6 @@ in
         argonaut-core
         arrays
         bifunctors
-        bigints
-        bignumber
         const
         control
         effect
@@ -140,6 +177,7 @@ in
         foldable-traversable
         foreign-object
         integers
+        js-bigints
         lists
         maybe
         mote
@@ -149,7 +187,6 @@ in
         prelude
         quickcheck
         record
-        sequences
         spec
         strings
         tuples
@@ -161,13 +198,20 @@ in
     };
   };
 
-  bignumber = {
+  bigints = build (recursiveUpdate super.bigints {
+    name = "bigints";
+    info.foreign."Data.BigInt" = ffi;
+  });
+
+  bignumber = build {
+    name = "bignumber";
     src.git = {
       repo = "https://github.com/mlabs-haskell/purescript-bignumber.git";
-      rev = "705923edd892a3397b90d28ce7db9a7181dcd599";
+      rev = "760d11b41ece31b8cdd3c53349c5c2fd48d3ff89";
     };
     info = {
-      foreign = node_modules;
+      foreign."Data.BigNumber" = ffi;
+
       dependencies = [
         console
         effect
@@ -185,38 +229,10 @@ in
     };
   };
 
-  sequences = {
-    src.git = {
-      repo = "https://github.com/hdgarrood/purescript-sequences";
-      rev = "1f1d828ef30070569c812d0af23eb7253bb1e990";
-    };
-    info = {
-      dependencies =
-        [
-          arrays
-          self."assert"
-          console
-          effect
-          lazy
-          maybe
-          newtype
-          nonempty
-          partial
-          prelude
-          profunctor
-          psci-support
-          quickcheck
-          quickcheck-laws
-          tuples
-          unfoldable
-          unsafe-coerce
-        ];
-    };
-  };
-
   properties = {
     src.git = {
       repo = "https://github.com/Risto-Stevcev/purescript-properties.git";
+      # v0.2.0
       rev = "ddcad0f6043cc665037538467a2e2e4173ef276a";
     };
     info = {
@@ -227,6 +243,7 @@ in
   lattice = {
     src.git = {
       repo = "https://github.com/Risto-Stevcev/purescript-lattice.git";
+      # v0.3.0
       rev = "aebe3686eba30f199d17964bfa892f0176c1742d";
     };
     info = {
@@ -237,6 +254,7 @@ in
   mote = {
     src.git = {
       repo = "https://github.com/garyb/purescript-mote.git";
+      # v3.0.0
       rev = "29aea4ad7b013d50b42629c87b01cf0202451abd";
     };
     info = {
@@ -248,63 +266,9 @@ in
     };
   };
 
-  medea = {
-    src.git = {
-      repo = "https://github.com/juspay/medea-ps.git";
-      rev = "8b215851959aa8bbf33e6708df6bd683c89d1a5a";
-    };
-    info = {
-      dependencies =
-        [
-          aff
-          argonaut
-          arrays
-          bifunctors
-          control
-          effect
-          either
-          enums
-          exceptions
-          foldable-traversable
-          foreign-object
-          free
-          integers
-          lists
-          maybe
-          mote
-          naturals
-          newtype
-          node-buffer
-          node-fs-aff
-          node-path
-          nonempty
-          ordered-collections
-          parsing
-          partial
-          prelude
-          psci-support
-          quickcheck
-          quickcheck-combinators
-          safely
-          spec
-          strings
-          these
-          transformers
-          typelevel
-          tuples
-          unicode
-          unordered-collections
-          unsafe-coerce
-        ];
-    };
-  };
-
-  purescript-toppokki = {
-    src.git = {
-      repo = "https://github.com/firefrorefiddle/purescript-toppokki";
-      ref = "mike/browserpages";
-      inherit (inputs.toppokki) rev;
-    };
+  purescript-toppokki = build {
+    name = "purescript-toppokki";
+    src.path = inputs.toppokki;
     info = {
       dependencies = [
         prelude
@@ -334,13 +298,14 @@ in
     };
   };
 
-  noble-secp256k1 = {
-    src.git = {
-      repo = "https://github.com/mlabs-haskell/purescript-noble-secp256k1.git";
-      rev = "710c15c48c5afae5e0623664d982a587ff2bd177";
-    };
+  noble-secp256k1 = build {
+    name = "noble-secp256k1";
+    src.path = inputs.noble-secp256k1;
     info = {
-      foreign = node_modules;
+      foreign = {
+        "Noble.Secp256k1.Schnorr" = ffi;
+        "Noble.Secp256k1.ECDSA" = ffi;
+      };
       dependencies =
         [
           aff
@@ -353,9 +318,18 @@ in
           # FIXME remove missing Data.ArrayBuffer.Types workaround
           arraybuffer-types
           # /endworkaround
-          # FIXME remove missing Data.UInt workaround
-          uint
-          # /endworkaround
+        ];
+    };
+  };
+  js-bigints = build {
+    name = "js-bigints";
+    src.path = inputs.js-bigints;
+    info = {
+      dependencies =
+        [
+          integers
+          maybe
+          prelude
         ];
     };
   };

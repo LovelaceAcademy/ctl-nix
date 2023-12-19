@@ -1,11 +1,14 @@
 # this is basically purs-nix/purs-nix official generator
 # but accepting arguments
-package-set-repo: pkgs:
+pkgs:
 let
   b = builtins;
   p = pkgs;
   l = p.lib;
-  package-set = l.importJSON (package-set-repo + /packages.json);
+  # TODO we should probably filter the universe of packages
+  #  to only include the packages being used by CTL and its
+  #  dependencies
+  package-set = l.importJSON (./packages.json);
   package-set-entries = l.mapAttrsToList (n: v: { inherit n v; }) package-set;
   escape-reserved-word = ps-pkgs: str:
     let
@@ -23,6 +26,7 @@ let
           {
             url = v.repo;
             ref = "refs/tags/${v.version}";
+            shallow = true;
           };
       in
       acc
