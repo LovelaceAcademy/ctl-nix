@@ -3,7 +3,10 @@ system: inputs: pkgs: npmlock2nix: self: super: with self;
 let
   inherit (pkgs.lib.attrsets) recursiveUpdate;
   # FIXME we should rely on node_modules from ctl-scaffhold
-  node_modules_ = npmlock2nix.v1.node_modules { src = inputs.ctl; };
+  node_modules_ = npmlock2nix.v2.node_modules {
+    inherit (pkgs) nodejs;
+    src = inputs.ctl;
+  };
   node_modules = node_modules_ + /node_modules;
   ffi = { inherit node_modules; };
   purs-nix = inputs.purs-nix { inherit system; };
