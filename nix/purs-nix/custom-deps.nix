@@ -6,6 +6,9 @@ let
   node_modules_ = npmlock2nix.v2.node_modules {
     inherit (pkgs) nodejs;
     src = inputs.ctl;
+    githubSourceHashMap = {
+      Fourierlabs.cardano-serialization-lib-gc.fcb15e03ffb30d3a63133a7c7a447b2a6d461b09 = "1zyy1nxbby4wcl30rc8fsis1c3f7nafavnwd3qi4bg0x00gxjdnh";
+    };
   };
   node_modules = node_modules_ + /node_modules;
   ffi = { inherit node_modules; };
