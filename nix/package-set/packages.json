@@ -358,13 +358,6 @@
     "repo": "https://github.com/JordanMartinez/purescript-arrays-zipper.git",
     "version": "v2.0.1"
   },
-  "ask": {
-    "dependencies": [
-      "unsafe-coerce"
-    ],
-    "repo": "https://github.com/Mateiadrielrafael/purescript-ask.git",
-    "version": "v1.0.0"
-  },
   "assert": {
     "dependencies": [
       "console",

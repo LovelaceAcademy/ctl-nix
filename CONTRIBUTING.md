@@ -10,7 +10,7 @@ We follow conventional commit [specification](https://www.conventionalcommits.or
 
 - pin CTL and peer deps on `flake.nix`
 - `nix flake lock`
-- update `nix/package-set/packages.json` to the corresponding CTL `packages.dhall` upstream rev
+- update `nix/package-set/packages.json` to the corresponding CTL `packages.dhall` package-sets rev, [example](https://github.com/purescript/package-sets/blob/psc-0.15.4-20230105/packages.json)
 - `nix build .#package-set --impure -L --show-trace --verbose --debug` (you can remove not used and missing deps from `package.json`)
 - `cp result nix/package-set/default.nix`
 - update `nix/purs-nix/custom-deps.nix` according CTL `{spago/packages}.dhall`
