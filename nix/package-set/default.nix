@@ -288,18 +288,6 @@ arrays-zipper =
           ];
       };
   };
-ask =
-  { src.git =
-      { repo = "https://github.com/Mateiadrielrafael/purescript-ask.git";
-        rev = "536e8f5855222c580d198f9742e6de012bd1a4c7";
-      };
-    info =
-      { version = "1.0.0";
-        dependencies =
-          [ unsafe-coerce 
-          ];
-      };
-  };
 "assert" =
   { src.git =
       { repo = "https://github.com/purescript/purescript-assert.git";

@@ -3,7 +3,15 @@ system: inputs: pkgs: npmlock2nix: self: super: with self;
 let
   inherit (pkgs.lib.attrsets) recursiveUpdate;
   # FIXME we should rely on node_modules from ctl-scaffhold
-  node_modules_ = npmlock2nix.v1.node_modules { src = inputs.ctl; };
+  node_modules_ = npmlock2nix.v2.node_modules {
+    inherit (pkgs) nodejs;
+    src = inputs.ctl;
+    githubSourceHashMap = {
+      Fourierlabs.cardano-serialization-lib-gc.fcb15e03ffb30d3a63133a7c7a447b2a6d461b09 = "PvKW1oQm2qiblTyJ6u5pMu4MwU0ZN1RnDNJYJ5O/VxQ=";
+    };
+    # TODO we should patch individual packages
+    sourceOverrides.buildRequirePatchShebangs = true;
+  };
   node_modules = node_modules_ + /node_modules;
   ffi = { inherit node_modules; };
   purs-nix = inputs.purs-nix { inherit system; };
@@ -280,21 +288,9 @@ in
         node-fs-aff
       ];
 
-      foreign =
-        let
-          # Missing in CTL, but available in ctl-scaffold
-          p = pkgs.mkYarnModules {
-            pname = "toppokki-node_modules";
-            version = inputs.toppokki.shortRev;
-            yarnLock = inputs.toppokki + /yarn.lock;
-            packageJSON = inputs.toppokki + /package.json;
-          };
-          ffi = [
-            "Toppokki"
-          ];
-          node_modules = p + /node_modules;
-        in
-        pkgs.lib.attrsets.genAttrs ffi (_: { inherit node_modules; });
+      foreign = {
+        "Toppokki" = ffi;
+      };
     };
   };
 

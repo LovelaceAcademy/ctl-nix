@@ -8,8 +8,9 @@ mkdir $TEST_DIR
 (
 	cd $TEST_DIR
 	git init
-	nix flake init -t github:LovelaceAcademy/nix-templates#pix-ctl-full
-	sed -i "s|github:LovelaceAcademy/ctl-nix|path:$CTL|g" flake.nix
+  # TODO revert ctl-nix and nix-templates to main (after merge)
+	nix flake init -t github:LovelaceAcademy/nix-templates/add-conway#pix-ctl-full
+	sed -i "s|github:LovelaceAcademy/ctl-nix/upgrade-conway|path:$CTL|g" flake.nix
 	nix develop --command npm install --no-save
 	nix build --show-trace -L
 	nix flake check --show-trace

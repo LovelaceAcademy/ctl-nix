@@ -3,8 +3,8 @@
 
   inputs =
     {
-      # TODO remove pinned to match v.7.0.0
-      ctl.url = "github:Plutonomicon/cardano-transaction-lib/v7.0.0";
+      # TODO remove pinned to match conway feature branch
+      ctl.url = "github:Fourierlabs/cardano-transaction-lib/add-conway";
       purs-nix.url = "github:purs-nix/purs-nix";
       utils.url = "github:ursi/flake-utils";
       nixpkgs.follows = "purs-nix/nixpkgs";
