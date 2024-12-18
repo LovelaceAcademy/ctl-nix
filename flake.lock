@@ -43646,11 +43646,11 @@
         "utils": "utils_55"
       },
       "locked": {
-        "lastModified": 1711996073,
-        "narHash": "sha256-NDV8q9qtpKjHgIcMVBgdNqEfhpfK1d19rHYNa7yq0Qs=",
+        "lastModified": 1734039249,
+        "narHash": "sha256-ch9NC4VRBKkoxHsYXqC4Mu+AtlRH733+1QKmbDGibT0=",
         "owner": "purs-nix",
         "repo": "purs-nix",
-        "rev": "8caa40f7fe69b9fcd05baae04c4ec9eb43953e2e",
+        "rev": "367c9a33920bf13c9a20990d16d793afedf630f4",
         "type": "github"
       },
       "original": {
